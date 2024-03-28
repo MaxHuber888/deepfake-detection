@@ -1,10 +1,15 @@
 import os
+import random
 import cv2
+import imageio
 import pandas as pd
+from tensorflow_docs.vis import embed
 from pytube import YouTube
 from tqdm import tqdm
 from glob import glob
 import matplotlib.pyplot as plt
+import tensorflow as tf
+import numpy as np
 
 
 def url_to_videos(url_list, vid_path):
@@ -24,70 +29,76 @@ def url_to_videos(url_list, vid_path):
     print('Task Completed!')
 
 
-def videos_to_frames(vid_path, frame_path, frame_gap, max_frames=-1):
-    video_paths = glob(f"{vid_path}/*")
-
-    for path in tqdm(video_paths):
-        name = path.split("/")[-1].split(".")[0]
-        print(name)
-
-        save_path = os.path.join(frame_path, name)
-
-        try:
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-        except OSError:
-            print(f"ERROR: creating directory with name {save_path}")
-
-        cap = cv2.VideoCapture(path)
-        idx = 0
-
-        while True:
-            ret, frame = cap.read()
-
-            if not ret:
-                cap.release()
-                break
-
-            if idx == 0:
-                cv2.imwrite(f"{save_path}/{idx}.png", frame)
-            else:
-                if idx % frame_gap == 0:
-                    cv2.imwrite(f"{save_path}/{idx}.png", frame)
-                if idx == max_frames and max_frames > 0:
-                    cap.release()
-                    break
-
-            idx += 1
-
-
-def load_frames(frames_path, batch_size=1):
-    frame_array = []
-
-    frame_paths = glob(f"{frames_path}/*")
-
-    for frame_dir in tqdm(frame_paths):
-        i = 0
-        frames = glob(f"{frame_dir}/*.png")
-        frame_list = []
-        for frame in frames:
-            i += 1
-            image = cv2.imread(frame)
-            rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            cv2.imshow('image', rgb_image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-            frame_list.append(rgb_image)
-
-            if i == batch_size:
-                break
-
-        frame_array.append(frame_list)
-        break
-
-    return frame_array
-
-
 def show_image(image):
     plt.imshow(image)
     plt.show()
+
+
+def format_frames(frame, output_size):
+    frame = tf.image.convert_image_dtype(frame, tf.float32)
+    frame = tf.image.resize_with_pad(frame, *output_size)
+    return frame
+
+
+# Returns numpy array of frames
+def get_frames_from_video_file(video_path, frame_count, output_size=(224, 224), frame_step=10):
+    # Read each video frame by frame
+    result = []
+    src = cv2.VideoCapture(str(video_path))
+
+    video_length = src.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    need_length = 1 + (frame_count - 1) * frame_step
+
+    if need_length > video_length:
+        start = 0
+    else:
+        max_start = video_length - need_length
+        start = random.randint(0, max_start + 1)
+
+    src.set(cv2.CAP_PROP_POS_FRAMES, start)
+    # ret is a boolean indicating whether read was successful, frame is the image itself
+    ret, frame = src.read()
+    result.append(format_frames(frame, output_size))
+
+    for _ in range(frame_count - 1):
+        for _ in range(frame_step):
+            ret, frame = src.read()
+        if ret:
+            frame = format_frames(frame, output_size)
+            result.append(frame)
+        else:
+            result.append(np.zeros_like(result[0]))
+    src.release()
+    result = np.array(result)[..., [2, 1, 0]]
+
+    return result
+
+
+def to_gif(images):
+    converted_images = np.clip(images * 255, 0, 255).astype(np.uint8)
+    imageio.mimsave('./animation.gif', converted_images, fps=10)
+    return embed.embed_file('./animation.gif')
+
+
+def train_val_split(source_path, split_path, train_test_ratio=0.8):
+    class_list = os.listdir(source_path)
+
+    if len(class_list) > 0:
+        for label in class_list:
+            # Get list of videos in current label/class
+            current_class_vids = os.listdir(source_path + "/" + label)
+            print("Label:", label)
+            print(current_class_vids[:3], "\n")
+
+            # Randomly split into train/test
+            current_class_df = pd.DataFrame(current_class_vids)
+
+            train_df = current_class_df.sample(frac = train_test_ratio)
+            train_list = train_df.values.tolist()
+            test_list = [item for item in current_class_vids if item not in train_list]
+
+            # Copy files to the correct destination
+            # TODO
+
+    print("Done.")
