@@ -1,34 +1,39 @@
+from keras.optimizers import Adam, SGD
 
-def prep_and_train_model(model, data):
+
+def prep_and_train_model(model, optim, train_data, test_data, epochs=1, batch_size=10):
+    # Initialize optimizer
+    if optim == 'adam':
+        optimizer = Adam()
+    elif optim == 'sgd':
+        lr = 0.1
+        optimizer = SGD(learning_rate=lr, momentum=0.9, weight_decay=lr / epochs)
+    else:
+        optimizer = Adam()
+
     # Compile the model for training
     model.compile(
-        optimizer="rmsprop",
-        loss=None,
-        loss_weights=None,
-        metrics=None,
-        weighted_metrics=None,
-        run_eagerly=False,
-        steps_per_execution=1,
-        jit_compile="auto",
-        auto_scale_loss=True,
+        loss="binary_crossentropy",
+        optimizer=optimizer,
+        metrics=["accuracy"]
     )
 
+    # TODO: Add parallel workers
+
     # Train the model
-    model.fit(
-        x=None,
-        y=None,
-        batch_size=None,
-        epochs=1,
-        verbose="auto",
-        callbacks=None,
-        validation_split=0.0,
-        validation_data=None,
-        shuffle=True,
-        class_weight=None,
-        sample_weight=None,
-        initial_epoch=0,
-        steps_per_epoch=None,
-        validation_steps=None,
-        validation_batch_size=None,
-        validation_freq=1,
+    history = model.fit(
+        train_data,
+        batch_size=batch_size,
+        epochs=epochs,
+        validation_data=test_data,
+        shuffle=True
     )
+
+    return history, model
+
+
+def save_model(history, model, out_path):
+    pass
+
+def load_model(model_path):
+    pass

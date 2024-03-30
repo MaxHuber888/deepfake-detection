@@ -94,7 +94,7 @@ def train_val_split(source_path, split_path, train_test_ratio=0.8):
             # Randomly split into train/test
             current_class_df = pd.DataFrame(current_class_vids)
 
-            train_df = current_class_df.sample(frac = train_test_ratio)
+            train_df = current_class_df.sample(frac=train_test_ratio)
             train_list = train_df.values.tolist()
             test_list = [item for item in current_class_vids if item not in train_list]
 
