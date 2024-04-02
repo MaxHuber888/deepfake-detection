@@ -50,6 +50,6 @@ def save_history(history, model_name):
 
 
 def load_model_from_path(model_path):
-
+    model = load_model(model_path)
     print(f"Model loaded from {model_path}.")
     return model
