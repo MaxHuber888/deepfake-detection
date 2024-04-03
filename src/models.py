@@ -1,6 +1,5 @@
 from keras import layers, models
 from keras.applications.inception_resnet_v2 import InceptionResNetV2
-from keras.applications.inception_v3 import InceptionV3
 from keras.src.layers import InputLayer
 
 
@@ -56,20 +55,4 @@ def get_mouthnet_model(img_size=256):
     return model
 
 
-def get_cnn_rnn_hybrid(img_size=256):
-    feature_extractor = InceptionV3(weights="imagenet", include_top=False, pooling="avg", input_shape=(img_size, img_size, 3))
 
-    model = models.Sequential()
-    model.add(InputLayer(shape=(img_size, img_size, 3)))
-    model.add(feature_extractor)
-    model.add(layers.Dense(128, activation='softmax', kernel_initializer='random_uniform', bias_initializer='zeros'))
-    #model.add(layers.Reshape((img_size*img_size, 3)))
-    #model.add(layers.GRU(16, return_sequences=True))
-    #model.add(layers.GRU(8))
-    model.add(layers.Dropout(0.4))
-    model.add(layers.Dense(8, activation="relu"))
-    model.add(layers.Dense(1, activation='sigmoid', kernel_initializer='random_uniform', bias_initializer='zeros'))
-
-    model.summary()
-
-    return model
