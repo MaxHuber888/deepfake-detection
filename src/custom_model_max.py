@@ -9,7 +9,7 @@ def get_cnn_rnn_hybrid(img_size=256):
     shape = (img_size, img_size, 3)
     # Create our convnet with (112, 112, 3) input shape
     # convnet = build_convnet()
-    mesonet = load_model("saved_models/Mesonet.keras")
+    mesonet = load_model("saved_models\Mesonet.keras")
 
     # then create our final model
     model = models.Sequential()

@@ -39,6 +39,9 @@ def get_mesonet_model(img_size=256):
 def get_mouthnet_model(img_size=256):
     base_model = InceptionResNetV2(include_top=False, weights=None, input_shape=(img_size, img_size, 3))
 
+    # for layer in base_model.layers:
+    #     layer.trainable = False
+
     model = models.Sequential()
     model.add(InputLayer(shape=(img_size, img_size, 3)))
     model.add(base_model)
