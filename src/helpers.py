@@ -41,7 +41,7 @@ def format_frames(frame, output_size):
 
 
 # Returns numpy array of frames
-def get_frames_from_video_file(video_path, frame_count, output_size=(224, 224), frame_step=10):
+def get_frames_from_video_file(video_path, frame_count, output_size=(256, 256), frame_step=10):
     # Read each video frame by frame
     result = []
     src = cv2.VideoCapture(str(video_path))
@@ -69,6 +69,44 @@ def get_frames_from_video_file(video_path, frame_count, output_size=(224, 224), 
             result.append(frame)
         else:
             result.append(np.zeros_like(result[0]))
+    src.release()
+    result = np.array(result)[..., [2, 1, 0]]
+
+    return result
+
+
+def sample_frames_from_video_file(video_path, sample_count, frames_per_sample, frame_step=10, output_size=(256, 256)):
+    # Read each video frame by frame
+    result = []
+    src = cv2.VideoCapture(str(video_path))
+
+    video_length = src.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    need_length = 1 + (frames_per_sample - 1) * frame_step
+
+    max_start = video_length - need_length
+
+    sample_starts = []
+
+    for sample in range(sample_count):
+        sample_start = int(max_start * sample / sample_count)
+        sample_starts.append(sample_start)
+        #print(sample_start)
+
+    for start in sample_starts:
+        src.set(cv2.CAP_PROP_POS_FRAMES, start)
+        # ret is a boolean indicating whether read was successful, frame is the image itself
+        ret, frame = src.read()
+        result.append(format_frames(frame, output_size))
+
+        for _ in range(frames_per_sample - 1):
+            for _ in range(frame_step):
+                ret, frame = src.read()
+            if ret:
+                frame = format_frames(frame, output_size)
+                result.append(frame)
+            else:
+                result.append(np.zeros_like(result[0]))
     src.release()
     result = np.array(result)[..., [2, 1, 0]]
 
