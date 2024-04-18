@@ -140,3 +140,11 @@ def train_val_split(source_path, split_path, train_test_ratio=0.8):
             # TODO
 
     print("Done.")
+
+def save_history(history, model_name):
+    hist_df = pd.DataFrame(history.history)
+    # If previous history exists, concatenate histories
+    if os.path.exists("saved_models/" + model_name + "_history.csv"):
+        previous_hist_df = pd.read_csv("saved_models/" + model_name + "_history.csv")
+        hist_df = pd.concat([previous_hist_df, hist_df], axis=0, ignore_index=True)
+    hist_df.to_csv("saved_models/" + model_name + "_history.csv")

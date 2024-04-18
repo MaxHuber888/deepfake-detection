@@ -23,7 +23,6 @@ def get_mesonet_model(img_size=256):
     model.add(layers.MaxPooling2D(pool_size=(4, 4)))
 
     model.add(layers.Reshape((1024,)))
-    # model.add(layers.Flatten())
 
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(16, activation='linear', kernel_initializer='random_uniform', bias_initializer='zeros'))
@@ -31,29 +30,21 @@ def get_mesonet_model(img_size=256):
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid', kernel_initializer='random_uniform', bias_initializer='zeros'))
 
-    model.summary()
-
     return model
 
 
 def get_mouthnet_model(img_size=256):
     base_model = InceptionResNetV2(include_top=False, weights=None, input_shape=(img_size, img_size, 3))
 
-    # for layer in base_model.layers:
-    #     layer.trainable = False
-
     model = models.Sequential()
     model.add(InputLayer(shape=(img_size, img_size, 3)))
     model.add(base_model)
 
     model.add(layers.Reshape((55296,)))
-    # model.add(layers.Flatten())
 
     model.add(layers.Dense(128, activation='softmax', kernel_initializer='random_uniform', bias_initializer='zeros'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid', kernel_initializer='random_uniform', bias_initializer='zeros'))
-
-    model.summary()
 
     return model
 
