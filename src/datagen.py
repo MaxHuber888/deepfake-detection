@@ -1,7 +1,5 @@
 import random
 from src.helpers import get_frames_from_video_file, sample_frames_from_video_file
-import numpy as np
-
 
 class FrameGenerator:
     def __init__(self, path, frame_count, output_shape=(256, 256), training=False):

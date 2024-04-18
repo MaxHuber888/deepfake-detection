@@ -6,7 +6,6 @@ import pandas as pd
 from tensorflow_docs.vis import embed
 from pytube import YouTube
 from tqdm import tqdm
-from glob import glob
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
