@@ -6,6 +6,7 @@ from keras.models import load_model
 
 def get_cnn_rnn_hybrid(img_size=256):
     # Pretrained Model
+    # Load in the best saved model
     mesonet = load_model("saved_models\MESONET_RegularFrame.keras")
 
     # Create our final model

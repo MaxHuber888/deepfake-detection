@@ -13,4 +13,12 @@ pip install -r requirements. txt
 
 ## Usage
 
-TODO
+To train the models and see the results first install the dependencies in the requirements file.
+
+1. Run the train_deepstar_models.ipynb Jupyter Notebook file to train the base Mesonet and Mouthnet models. 
+    - 2 models will be trained for each - One for regular frame generator, One for sample frame generator
+2. Evaluate the trained models in evaluate_deepstar_models.ipynb file
+3. Run the train_temporal_models.ipynb file in order to train the RNN model
+    - Can modify which base model is used by referencing the specific model in custom_RNN_model.py file
+4. Evaluate the RNN model in evaluate_temporal_models.ipynb file
+5. Run the train
