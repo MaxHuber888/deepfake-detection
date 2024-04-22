@@ -1,0 +1,9 @@
+imageio==2.34.0
+keras==3.2.1
+matplotlib==3.8.3
+numpy==1.26.4
+pandas==2.2.2
+pytube==15.0.0
+tensorflow==2.16.1
+tensorflow_docs==2024.2.5.73858
+tqdm==4.66.2
