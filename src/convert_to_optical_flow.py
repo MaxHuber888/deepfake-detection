@@ -97,10 +97,5 @@ def process_directory(directory_path):
     ):
         if filename.lower().endswith((".mp4")):  # check for video file extensions
             video_path = os.path.join(directory_path, filename)
-            output_path = os.path.join(directory_path, f"output_{filename}")
+            output_path = os.path.join(directory_path, "/optical/", f"output_{filename}")
             compute_optical_flow(video_path, output_path, show_video=False)
-
-
-# NOTE REPLACE directory_path with the path to whatever video directory you want
-directory_path = "path_to_video_directory"
-process_directory(directory_path)
