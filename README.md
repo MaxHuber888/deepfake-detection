@@ -13,6 +13,8 @@ pip install -r requirements. txt
 
 ## Usage
 
+To train the optical model, you first have to run the convert.py to get the optical flow variants of the videos. Note: this may take days.
+
 To train the models and see the results first install the dependencies in the requirements file.
 
 1. Run the train_deepstar_models.ipynb Jupyter Notebook file to train the base Mesonet and Mouthnet models. 
